@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+sentence-transformers
+numpy
+supabase
+python-dotenv
+google-generativeai
+qdrant-client
+python-dotenv
+tiktoken
+tiktoken
+

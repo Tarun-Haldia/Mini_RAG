@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini RAG System</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 40px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 { color: #38bdf8; }
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    button {
+      padding: 10px 16px;
+      background: #38bdf8;
+      color: black;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+    .box {
+      background: #020617;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .meta {
+      font-size: 0.85em;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+    .source {
+      background: #020617;
+      padding: 10px;
+      border-left: 3px solid #38bdf8;
+      margin-top: 8px;
+      font-size: 0.9em;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🔎 Mini RAG System</h1>
+
+<!-- INGEST -->
+<div class="box">
+  <h2>📄 Ingest Text</h2>
+  <textarea id="ingestText" rows="6"
+    placeholder="Paste documents, notes, or articles here..."></textarea>
+  <button onclick="ingest()">Ingest</button>
+  <div class="meta" id="ingestMeta"></div>
+</div>
+
+<!-- ASK -->
+<div class="box">
+  <h2>❓ Ask Question</h2>
+  <input id="question" placeholder="Ask a question..." />
+  <button onclick="ask()">Ask</button>
+
+  <h3>🧠 Answer</h3>
+  <div id="answer"></div>
+
+  <div class="meta" id="askMeta"></div>
+
+  <h3>📚 Sources</h3>
+  <div id="sources"></div>
+</div>
+
+<script>
+async function ingest() {
+  const text = document.getElementById("ingestText").value;
+  const meta = document.getElementById("ingestMeta");
+  meta.innerText = "Ingesting…";
+
+  const start = performance.now();
+
+  const res = await fetch("/ingest", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text })
+  });
+
+  const data = await res.json();
+  const elapsed = Math.round(performance.now() - start);
+
+  meta.innerText =
+    `Chunks: ${data.chunks ?? "?"} | ` +
+    `Tokens: ${data.tokens ?? "?"} | ` +
+    `Time: ${elapsed} ms`;
+}
+
+async function ask() {
+  const q = document.getElementById("question").value;
+  const answerBox = document.getElementById("answer");
+  const sourcesBox = document.getElementById("sources");
+  const metaBox = document.getElementById("askMeta");
+
+  answerBox.innerText = "Thinking…";
+  sourcesBox.innerHTML = "";
+  metaBox.innerText = "";
+
+  const start = performance.now();
+
+  const res = await fetch("/ask", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question: q })
+  });
+
+  const data = await res.json();
+  const elapsed = Math.round(performance.now() - start);
+
+  // Answer
+  answerBox.innerText = data.answer ?? "No answer returned.";
+
+  // Sources
+  (data.sources || []).forEach(s => {
+    const div = document.createElement("div");
+    div.className = "source";
+    div.innerText =
+      `Source ${s.id} (score ${s.score?.toFixed(2) ?? "?"})\n\n${s.text}`;
+    sourcesBox.appendChild(div);
+  });
+
+  // Token + cost estimate (rough)
+  const prompt = data.tokens?.prompt ?? 0;
+  const completion = data.tokens?.completion ?? 0;
+  const total = prompt + completion;
+
+  // GPT-4-ish rough estimate ($0.01 / 1k tokens)
+  const cost = (total / 1000 * 0.01).toFixed(4);
+
+  metaBox.innerText =
+    `Time: ${data.latency_ms ?? elapsed} ms | ` +
+    `Tokens: ${total} (P:${prompt} / C:${completion}) | ` +
+    `Est. cost: $${cost}`;
+}
+</script>
+
+</body>
+</html>
