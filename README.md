@@ -1,13 +1,3 @@
----
-title: Mini RAG
-emoji: 🏢
-colorFrom: pink
-colorTo: yellow
-sdk: docker
-pinned: false
-short_description: RAG using LLM/API.
----
-
 # Mini RAG System (FastAPI + Supabase + Gemini)
 
 A minimal but production‑grade **Retrieval‑Augmented Generation (RAG)** system built with FastAPI. The system ingests raw text, chunks it using a clear token‑based strategy, stores embeddings in a hosted vector database (Supabase + pgvector‑style storage), retrieves and reranks relevant chunks, and generates grounded answers using an LLM with citations.
@@ -15,28 +5,6 @@ A minimal but production‑grade **Retrieval‑Augmented Generation (RAG)** syst
 This project is intentionally simple, transparent, and interview‑friendly.
 
 
-## 📸 Screenshots
-
-### Chunking Strategy
-![Chunking](screenshots/Chunking.png)
-
-### Data Combination Before Ingestion
-![Data Combine](screenshots/data_combine.png)
-
-### Empty Data Handling
-![Empty Data Handle](screenshots/empty_data_handle.png)
-
-### Accuracy Improvement (Reranking)
-![Increase Accuracy](screenshots/Inc accuracy.png)
-
-### Model & Pipeline Definition
-![ML Define](screenshots/ML define.png)
-
-### End-to-End Test Proof
-![Test Proof](screenshots/test_proof.png)
-
-
----
 
 ## 1. Architecture Overview
 
