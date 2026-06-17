@@ -2,9 +2,8 @@
 
 A minimal but production‑grade **Retrieval‑Augmented Generation (RAG)** system built with FastAPI. The system ingests raw text, chunks it using a clear token‑based strategy, stores embeddings in a hosted vector database (Supabase + pgvector‑style storage), retrieves and reranks relevant chunks, and generates grounded answers using an LLM with citations.
 
+
 This project is intentionally simple, transparent, and interview‑friendly.
-
-
 
 ## 1. Architecture Overview
 
