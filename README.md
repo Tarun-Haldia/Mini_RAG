@@ -250,8 +250,3 @@ This project demonstrates a complete, working RAG pipeline with:
 * Retrieval + reranking
 * Grounded LLM answering
 * Simple, inspectable frontend
-
-
-
-
-=======
